@@ -1,0 +1,402 @@
+﻿<controls:MetroWindow 
+        x:Class="InterestCalculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
+                       xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz" 
+                       xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz" 
+                       xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes" 
+                       WindowTransitionsEnabled="False" 
+                       TextElement.Foreground="{DynamicResource MaterialDesignBody}" 
+                       Background="{DynamicResource MaterialDesignPaper}"					   
+                       GlowBrush="{DynamicResource AccentColorBrush}"					   
+                       FontFamily="{StaticResource DefaultFont}" 
+
+        Title="Interest Calculator (15 June 2019)" WindowState="Maximized" MinHeight="720" MinWidth="1280" FontSize="16"
+        xmlns:local="clr-namespace:InterestCalculator"
+    
+        >
+
+    <dockablz:Layout Margin="10">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+              
+            </Grid.RowDefinitions>
+
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+
+                <Grid  Grid.ColumnSpan="2">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="15*" />
+                        <RowDefinition Height="25*" />
+                    </Grid.RowDefinitions>
+
+
+                    <StackPanel Margin="10" Grid.Row="0">
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="Borrower Name" />
+                            <TextBox Width="160" x:Name="BorrowerName"  LostFocus="Button_Click" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="Account Number" />
+                            <TextBox Width="160" x:Name="AccountNumber"  LostFocus="Button_Click" />
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="Outstanding Amount" />
+                            <TextBox Width="160" x:Name="OutstandingAmount"  LostFocus="Button_Click" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="Start Date" />
+                            <!--<DatePicker x:Name="StartDate" SelectedDateChanged="StartDate_SelectedDateChanged" />-->
+                            <TextBox Width="160" x:Name="StartDate"   LostFocus="Button_Click"  />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="End Date" />
+                            <!--<DatePicker x:Name="EndDate" SelectedDateChanged="EndDate_SelectedDateChanged" />-->
+                            <TextBox Width="160" x:Name="EndDate"   LostFocus="Button_Click" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="160" Content="Interest Rate" />
+                            <TextBox Width="160" x:Name="InterestRate" LostFocus="Button_Click"  />
+                            <!--<Button Content="Interest Rate Changes" Click="InterestRatesButton_Click" />-->
+                        </StackPanel>
+
+
+                    </StackPanel>
+
+
+
+                    <DataGrid Margin="5" BorderThickness="1" GridLinesVisibility="All" Grid.Row="1" MaxHeight="300"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="InterestRatesGrid" ItemsSource="{Binding}" AutoGenerateColumns="False"   SelectionUnit="FullRow" Style="{StaticResource AzureDataGrid}" >
+                        <DataGrid.Resources>
+                            <Style x:Key="DataGridColumnHeaderDataGridCellStyle"
+       TargetType="{x:Type DataGridCell}" 
+       BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter HorizontalAlignment="Stretch" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Interest Start Date" SortMemberPath="StartDate" Binding="{Binding DisplayStartDate, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridTextColumn Header="Interest Rate" Binding="{Binding InterestRate, UpdateSourceTrigger=LostFocus}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+
+
+                    <DataGrid BorderThickness="1" GridLinesVisibility="All" Grid.Row="2" Margin="5" MaxHeight="300" x:Name="TransactionGrid"  ItemsSource="{Binding}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  AutoGenerateColumns="False" CanUserAddRows="True"  SelectionUnit="FullRow"  Style="{StaticResource AzureDataGrid}" >
+                        <DataGrid.Resources>
+                            <Style x:Key="DataGridColumnHeaderDataGridCellStyle"
+       TargetType="{x:Type DataGridCell}" 
+       BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter HorizontalAlignment="Center" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Transaction Date" Binding="{Binding DisplayTransactionDate, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridTextColumn Header="Transaction Amount" Binding="{Binding TransactionAmount, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridCheckBoxColumn ElementStyle="{DynamicResource MetroDataGridCheckBox}"
+                                        EditingElementStyle="{DynamicResource MetroDataGridCheckBox}"
+                                        Header="Credit?"
+                                        Binding="{Binding Path=IsCredit, UpdateSourceTrigger=PropertyChanged}"
+                                        />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                </Grid>
+
+
+                <Button  Content="Refresh Interest Calculation" Margin="10" Click="Button_Click" />
+            </StackPanel>
+
+
+
+            <!--<dragablz:TabablzControl x:Name="InterestTypeTabControl" Margin="10" Grid.Column="1" >
+
+                <TabItem x:Name="CompoundInterest" Header="Compound Interest">-->
+
+            <dragablz:TabablzControl x:Name="CompoundInterestTabControl" Padding="10"  Margin="10" Grid.Column="1" SelectionChanged="CompoundInterestTabControl_SelectionChanged" >
+                <TabItem Header="Monthly Compound Interest" >
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2">
+
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ListView x:Name="InterestInfoListM" MinHeight="400">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn Width="95" Header="Date" DisplayMemberBinding="{Binding Date}" />
+
+
+                                            <GridViewColumn Width="110" Header="Start Date" DisplayMemberBinding="{Binding DisplayStartDate}" />
+                                            <GridViewColumn Width="110" Header="End Date" DisplayMemberBinding="{Binding DisplayEndDate}" />
+                                            <GridViewColumn Width="60" Header="Days"  DisplayMemberBinding="{Binding DisplayDays}"/>
+                                            <GridViewColumn Width="70" Header="ROI(%)"  DisplayMemberBinding="{Binding DisplayInterestRate}" />
+                                            <GridViewColumn Width="150" Header="Principal"  DisplayMemberBinding="{Binding DisplayPrincipal}" />
+                                            
+                                            <GridViewColumn Width="120" Header="Interest"  DisplayMemberBinding="{Binding DisplayInterest}" />
+
+                                            <GridViewColumn Width="75" Header="Debit" DisplayMemberBinding="{Binding DebitAmount}" />
+                                            <GridViewColumn Width="75" Header="Credit" DisplayMemberBinding="{Binding CreditAmount}" />
+                                            
+                                            <GridViewColumn Width="150" Header="Balance"  DisplayMemberBinding="{Binding DisplayTotalWithInterest}" />
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                        </ScrollViewer>
+
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Quarterly Compound Interest" >
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2">
+
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ListView x:Name="InterestInfoListQ" MinHeight="400">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn Width="95" Header="Date" DisplayMemberBinding="{Binding Date}" />
+
+
+                                            <GridViewColumn Width="110" Header="Start Date" DisplayMemberBinding="{Binding DisplayStartDate}" />
+                                            <GridViewColumn Width="110" Header="End Date" DisplayMemberBinding="{Binding DisplayEndDate}" />
+                                            <GridViewColumn Width="60" Header="Days"  DisplayMemberBinding="{Binding DisplayDays}"/>
+                                            <GridViewColumn Width="150" Header="Principal"  DisplayMemberBinding="{Binding DisplayPrincipal}" />
+                                            <GridViewColumn Width="70" Header="ROI(%)"  DisplayMemberBinding="{Binding DisplayInterestRate}" />
+                                            <GridViewColumn Width="120" Header="Interest"  DisplayMemberBinding="{Binding DisplayInterest}" />
+
+                                            <GridViewColumn Width="75" Header="Credit" DisplayMemberBinding="{Binding CreditAmount}" />
+                                            <GridViewColumn Width="75" Header="Debit" DisplayMemberBinding="{Binding DebitAmount}" />
+
+                                            <GridViewColumn Width="150" Header="Balance"  DisplayMemberBinding="{Binding DisplayTotalWithInterest}" />
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                        </ScrollViewer>
+
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Half Yearly Compound Interest" >
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2">
+
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ListView x:Name="InterestInfoListH" MinHeight="400">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn Width="95" Header="Date" DisplayMemberBinding="{Binding Date}" />
+
+
+                                            <GridViewColumn Width="110" Header="Start Date" DisplayMemberBinding="{Binding DisplayStartDate}" />
+                                            <GridViewColumn Width="110" Header="End Date" DisplayMemberBinding="{Binding DisplayEndDate}" />
+                                            <GridViewColumn Width="60" Header="Days"  DisplayMemberBinding="{Binding DisplayDays}"/>
+                                            <GridViewColumn Width="150" Header="Principal"  DisplayMemberBinding="{Binding DisplayPrincipal}" />
+                                            <GridViewColumn Width="70" Header="ROI(%)"  DisplayMemberBinding="{Binding DisplayInterestRate}" />
+                                            <GridViewColumn Width="120" Header="Interest"  DisplayMemberBinding="{Binding DisplayInterest}" />
+
+                                            <GridViewColumn Width="75" Header="Credit" DisplayMemberBinding="{Binding CreditAmount}" />
+                                            <GridViewColumn Width="75" Header="Debit" DisplayMemberBinding="{Binding DebitAmount}" />
+
+                                            <GridViewColumn Width="150" Header="Balance"  DisplayMemberBinding="{Binding DisplayTotalWithInterest}" />
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                        </ScrollViewer>
+
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Annual Compound Interest" >
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2">
+
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ListView x:Name="InterestInfoListA" MinHeight="400">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn Width="95" Header="Date" DisplayMemberBinding="{Binding Date}" />
+
+
+                                            <GridViewColumn Width="110" Header="Start Date" DisplayMemberBinding="{Binding DisplayStartDate}" />
+                                            <GridViewColumn Width="110" Header="End Date" DisplayMemberBinding="{Binding DisplayEndDate}" />
+                                            <GridViewColumn Width="60" Header="Days"  DisplayMemberBinding="{Binding DisplayDays}"/>
+                                            <GridViewColumn Width="150" Header="Principal"  DisplayMemberBinding="{Binding DisplayPrincipal}" />
+                                            <GridViewColumn Width="70" Header="ROI(%)"  DisplayMemberBinding="{Binding DisplayInterestRate}" />
+                                            <GridViewColumn Width="120" Header="Interest"  DisplayMemberBinding="{Binding DisplayInterest}" />
+
+                                            <GridViewColumn Width="75" Header="Credit" DisplayMemberBinding="{Binding CreditAmount}" />
+                                            <GridViewColumn Width="75" Header="Debit" DisplayMemberBinding="{Binding DebitAmount}" />
+
+                                            <GridViewColumn Width="150" Header="Balance"  DisplayMemberBinding="{Binding DisplayTotalWithInterest}" />
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                        </ScrollViewer>
+
+
+                    </Grid>
+                </TabItem>
+                
+                <TabItem x:Name="SimpleInterest" Header="Simple Interest">
+
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+
+                            <!--<Button Margin="10" Content="Calculate Interest" Height="25" Click="Button_Click" />-->
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" />
+                                    <ColumnDefinition Width="300" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox x:Name="Years" Grid.Column="0" />
+                                <TextBox x:Name="YearsInterest" Grid.Column="1" TextAlignment="Right" />
+
+                                <TextBox x:Name="Months" Grid.Column="0" Grid.Row="1" />
+                                <TextBox x:Name="MonthsInterest" Grid.Column="1" Grid.Row="1" TextAlignment="Right" />
+
+                                <TextBox x:Name="Days" Grid.Column="0" Grid.Row="2" />
+                                <TextBox x:Name="DaysInterest" Grid.Column="1" Grid.Row="2" TextAlignment="Right" />
+
+                                <TextBlock Text="Total Interest" Grid.Column="0" Grid.Row="3" />
+                                <TextBox x:Name="TotalInterest" Grid.Column="1" Grid.Row="3" TextAlignment="Right" />
+
+                                <TextBlock Text="Principal + Total Interest" Grid.Column="0" Grid.Row="4" />
+                                <TextBox x:Name="TotalAmountWithInterest" Grid.Column="1" Grid.Row="4" TextAlignment="Right" />
+
+                            </Grid>
+
+
+                        </StackPanel>
+
+                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1">
+
+
+
+
+                        </Grid>
+                    </Grid>
+
+                </TabItem>
+
+                <TabItem x:Name="SimpleInterestByDays" Header="Simple Interest By Days">
+
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+
+                            <!--<Button Margin="10" Content="Calculate Interest" Height="25" Click="Button_Click" />-->
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" />
+                                    <ColumnDefinition Width="300" />
+                                </Grid.ColumnDefinitions>
+
+
+                                <TextBox x:Name="XDays" Grid.Column="0" Grid.Row="0" />
+                                <TextBox x:Name="XDaysInterest" Grid.Column="1" Grid.Row="0" TextAlignment="Right" />
+
+                                <TextBlock Text="Total Interest" Grid.Column="0" Grid.Row="1" />
+                                <TextBox x:Name="XTotalInterest" Grid.Column="1" Grid.Row="1" TextAlignment="Right" />
+
+                                <TextBlock Text="Principal + Total Interest" Grid.Column="0" Grid.Row="2" />
+                                <TextBox x:Name="XTotalAmountWithInterest" Grid.Column="1" Grid.Row="2" TextAlignment="Right" />
+
+                            </Grid>
+
+
+                        </StackPanel>
+
+                        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1">
+
+
+
+
+                        </Grid>
+                    </Grid>
+
+                </TabItem>
+
+            </dragablz:TabablzControl>
+
+
+            <!--</TabItem>
+
+              
+
+            </dragablz:TabablzControl>-->
+
+
+
+        </Grid>
+
+
+    </dockablz:Layout>
+
+
+</controls:MetroWindow>
